@@ -5,18 +5,19 @@ import csv
 import subprocess
 
 def main () :
-    if sys.argv[1] == "-a":
-        mod_line(sys.argv[2], get_random(), True, get_mail_addr())
-        generate_postfix_config()
-    elif sys.argv[1] == "-l":
-        res = lookup(sys.argv[2])
-        print ("results for \"" + sys.argv[2] + "\":")
-        for r in res:
-            print("\t" + r)
-        
-    elif sys.argv[1] == "-r":
-        mod_line(sys.argv[2], get_random(), False, get_mail_addr())
-        generate_postfix_config()
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "-a":
+            mod_line(sys.argv[2], get_random(), True, get_mail_addr())
+            generate_postfix_config()
+        elif sys.argv[1] == "-l":
+            res = lookup(sys.argv[2])
+            print ("results for \"" + sys.argv[2] + "\":")
+            for r in res:
+                print("\t" + r)
+                
+        elif sys.argv[1] == "-r":
+            mod_line(sys.argv[2], get_random(), False, get_mail_addr())
+            generate_postfix_config()
     else:
         print_usage()
 
