@@ -12,6 +12,10 @@ The advantage of this is, that virtual addresses that get leaked to spam distrib
 * make sure *catchall* always will have the necessary rights to access the files in /etc/catchall (e.g. 'chown -R [user] /etc/catchall')
 * you can move the executable ('catchall.py') to /usr/bin/catchall, then you can use the catchall command directly in your shell / crontab / whatever
 
+## config
+* begins with '[main]'
+* 'domains = ' - the mail domains you own and postfix ist configured on, comma seperated without spaces, first is default (e.g. 'domains = @example.com')
+* 'mainaddr = ' - the mail address incoming mail is redirected to
+
 ## TODO
-* add savefile for: main-address, domains
 * improve installation (create and own directories) (makefile would do!)
