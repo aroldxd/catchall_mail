@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import random
 import sys
 import csv
@@ -6,24 +6,28 @@ import subprocess
 import os
 import time
 from shutil import copyfile
+import configparser
 
 basedir="/etc/catchall/"
 savefile=basedir+"save.csv"
-backupdir="/etc/catchall/backup/"
+backupdir=basedir+"backup/"
 mapfile="/etc/postfix/virtual"
+configfile=basedir+"config"
+domains=[]
+mainaddress=""
 
 def main () :
     init()
     
     if len(sys.argv) > 1:
         if sys.argv[1] == "-a":
-            mod_line(sys.argv[2], get_random(), True, get_mail_addr())
+            mod_line(sys.argv[2], get_random(), True, get_mail_addr(sys.argv[3]))
             generate_postfix_config()
         elif sys.argv[1] == "-s":
             lookup(sys.argv[2])
                 
         elif sys.argv[1] == "-r":
-            mod_line(sys.argv[2], get_random(), False, get_mail_addr())
+            mod_line(sys.argv[2], get_random(), False, get_mail_addr(sys.argv[3]))
             generate_postfix_config()
 
         elif sys.argv[1] == "-l":
@@ -34,18 +38,66 @@ def main () :
     else:
         print_usage()
 
-def get_mail_addr():
-    if len(sys.argv) > 3:
-        if sys.argv[3] == "1":
-            return "@nope.run"
-        elif sys.argv[3] == "2":
-            return "@leanderseidlitz.com"
-        else:
-            return "@acknexster.de"
+def init () :
+    save_dir = os.path.dirname(basedir)
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+        print("created basedir")
+
+    backup = os.path.dirname(backupdir)
+    if not os.path.exists(backup):
+        os.makedirs(backup)
+        print("created backupdir")
+
+    if os.path.isfile(savefile):
+        os.utime(savefile, None)
     else:
-        return "@acknexster.de"
+        open(savefile, 'a').close()
+        print("created savefile")
+
+    if os.path.isfile(configfile):
+        os.utime(savefile, None)
+    else:
+        open(configfile, 'a').close()
+        print("created configfile")
+
+    readconfig()
+
+def readconfig():
+    global domains
+    global mainaddress
+    config_p = configparser.ConfigParser()
+    config_p.read(configfile)
+    
+    if (not 'main' in config_p):
+        print ("config file missing / damages (make sure it begins with '[main]'!")
+        exit(1)
+
+    if (len(config_p['main']['domains']) == 0):
+        print ("no domains [domains] set!")
+        exit(1)
+
+    if (len(config_p['main']['mainaddr']) == 0):
+        print ("Main mail address [mainaddr] not set!")
+        exit(1)
         
-def mod_line (name, pref, add_Entry, mail_addr) :
+    domains_tmp = config_p['main']['domains']
+    domains = domains_tmp.split(',')
+    
+    mainaddress = config_p['main']['mainaddr']
+           
+
+def get_mail_addr(num):
+    if len(sys.argv) < 3:
+        return domains[0]
+    
+    addr = int(num)
+    if (addr > len(domains)):
+        return domains[0] #return default address
+    else:
+        return domains[addr]
+    
+def mod_line (name, pref, add_Entry, mail_addr) : 
     #get current file
     save_file = open(savefile, 'r')
     r = csv.reader(save_file, delimiter=',',quotechar='|')
@@ -77,8 +129,11 @@ def mod_line (name, pref, add_Entry, mail_addr) :
     save_file.flush()
     save_file.close()
 
-    print ("new / modified entry:")
-    lookup(name)
+    print ("\n\nnew / modified entry:")
+    for l in lines: #print the updated entry
+        if l[0] == name and l[2] == mail_addr:
+            print_line ([l[0], l[1]+l[2]])
+
         
 def user_confirm_replace(line):
     response = input("Name already in database: "+line[0]+" - "+line[1]+", replace?\n[yes/NO] ")
@@ -87,23 +142,6 @@ def user_confirm_replace(line):
     else:
         return False
 
-def init () :
-    save_dir = os.path.dirname(basedir)
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
-        print("created basedir")
-
-    backup = os.path.dirname(backupdir)
-    if not os.path.exists(backup):
-        os.makedirs(backup)
-        print("created backupdir")
-
-    if os.path.isfile(savefile):
-        os.utime(savefile, None)
-    else:
-        open(savefile, 'a').close()
-        print("created savefile")
-    
 def backup_save () :
     localtime   = time.localtime()
     timeString  = time.strftime("%Y%m%d%H%M%S", localtime)
@@ -193,10 +231,19 @@ def print_usage ():
     print ("-s [Name] [mail_addr]: (search) lookup the prefix of a given name")
     print ("-l                   : list all current members of the savefile")
     print ("-b                   : backup the savefile")
-    print ("mail addr:")
-    print ("\t\t 0\t @acknexster.de \t [default]")
-    print ("\t\t 1\t @nope.run")
-    print ("\t\t 2\t @leanderseidlitz.com")
+    print ("\nmail addr (if config readable and addresses set):")
+    print (gen_domain_string())
 
+def gen_domain_string():
+    result = ""
+    i = 0
+    for m in domains:
+        result += "\t"+str(i)+"\t"+m
+        if i == 0:
+            result += "\t[DEFAULT]"
+        result += "\n"
+        i=i+1
+    return result
+    
 if __name__ == "__main__":
         main()
