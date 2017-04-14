@@ -36,6 +36,9 @@ def main () :
 
         elif sys.argv[1] == "-b":
             backup_save()
+
+        elif sys.argv[1] == "-v":
+            print ("catchall version 0.1")
     else:
         print_usage()
 
@@ -228,6 +231,7 @@ def print_usage ():
     print ("-s [Name] [mail_addr]: (search) lookup the prefix of a given name")
     print ("-l                   : list all current members of the savefile")
     print ("-b                   : backup the savefile")
+    print ("-v                   : print version")
     print ("\nmail addr (if config readable and addresses set):")
     print (gen_domain_string())
 
