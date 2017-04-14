@@ -40,7 +40,7 @@ def main():
             backup_save()
 
         elif sys.argv[1] == "-v":
-            print("catchall version 0.11")
+            print("catchall version 0.12")
     else:
         print_usage()
 
@@ -164,14 +164,6 @@ def backup_save():
     backup_file_name = backupdir + timeString + ".csv.bkp"
     print("saving savefile to: " + backup_file_name)
     copyfile(savefile, backup_file_name)
-
-
-def print_file():
-    save_file = open(savefile, 'r')
-    save = csv.reader(save_file, delimiter=',', quotechar='|')
-    for row in save:
-        print(row)
-    save_file.close()
 
 
 def generate_postfix_config():
