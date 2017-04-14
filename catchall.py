@@ -8,6 +8,7 @@ import time
 from shutil import copyfile
 import configparser
 
+TESTMODE = False #mainly prevents the writing of postfix config
 basedir="/etc/catchall/"
 savefile=basedir+"save.csv"
 backupdir=basedir+"backup/"
@@ -156,9 +157,7 @@ def print_file () :
     save_file.close()
 
     
-def generate_postfix_config () :
-    TESTMODE = True
-    
+def generate_postfix_config () :    
     save_file = open(savefile, 'r')
     save = csv.reader(save_file, delimiter=',', quotechar='|')
     out = ""
