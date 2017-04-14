@@ -8,9 +8,11 @@ The advantage of this is, that virtual addresses that get leaked to spam distrib
 
 ## installation
 * configure your main address in the config file
-* first run has to be done with the necessary rights to create directories in /etc
+* 'make install' or create the directories and move the files yourself (see #files)
 * make sure *catchall* always will have the necessary rights to access the files in /etc/catchall (e.g. 'chown -R [user] /etc/catchall')
-* you can move the executable ('catchall.py') to /usr/bin/catchall, then you can use the catchall command directly in your shell / crontab / whatever
+
+## usage
+catchall prints the usage if called without arguments
 
 ## config
 | option | explanation |
@@ -18,6 +20,16 @@ The advantage of this is, that virtual addresses that get leaked to spam distrib
 | [main] | begin of config |
 | domains | the mail domains you own and postfix ist configured on, comma seperated without spaces, first is default (e.g. 'domains = @example.com') |
 | mainaddr | the mail address incoming mail is redirected to |
+
+## files
+| file | function |
+|------------------|---------------------|
+| [basedir] | base directory, contains all files (defaults to /etc/catchall) |
+| save.csv | contains virtual mailaddress to name relation |
+| config | config file (take a look at 'default_config') |
+| [basedir]/backup/ | contains backups of the savefile |
+| /etc/postfix/virtual | file that tells postfix where to route virtual mail addresses |
+
 
 ## TODO
 * improve installation (create and own directories) (makefile would do!)
