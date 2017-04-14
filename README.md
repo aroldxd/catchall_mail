@@ -14,4 +14,4 @@ The advantage of this is, that virtual addresses that get leaked to spam distrib
 
 ## TODO
 * add savefile for: main-address, domains
-* improve installation (create and own directories)
+* improve installation (create and own directories) (makefile would do!)
