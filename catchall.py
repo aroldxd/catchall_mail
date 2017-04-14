@@ -22,13 +22,13 @@ def main () :
     
     if len(sys.argv) > 1:
         if sys.argv[1] == "-a":
-            mod_line(sys.argv[2], get_random(), True, get_mail_addr(sys.argv[3]))
+            mod_line(sys.argv[2], get_random(), True, get_mail_addr())
             generate_postfix_config()
         elif sys.argv[1] == "-s":
             lookup(sys.argv[2])
                 
         elif sys.argv[1] == "-r":
-            mod_line(sys.argv[2], get_random(), False, get_mail_addr(sys.argv[3]))
+            mod_line(sys.argv[2], get_random(), False, get_mail_addr())
             generate_postfix_config()
 
         elif sys.argv[1] == "-l":
@@ -89,15 +89,15 @@ def readconfig():
     mainaddress = config_p['main']['mainaddr']
            
 
-def get_mail_addr(num):
-    if len(sys.argv) < 3:
+def get_mail_addr():
+    if len(sys.argv) <= 3:
         return domains[0]
-    
-    addr = int(num)
-    if (addr > len(domains)):
-        return domains[0] #return default address
     else:
-        return domains[addr]
+        addr = int(sys.argv[3])
+        if (addr > len(domains)):
+            return domains[0] #return default address
+        else:
+            return domains[addr]
     
 def mod_line (name, pref, add_Entry, mail_addr) : 
     #get current file
@@ -131,10 +131,13 @@ def mod_line (name, pref, add_Entry, mail_addr) :
     save_file.flush()
     save_file.close()
 
-    print ("\n\nnew / modified entry:")
-    for l in lines: #print the updated entry
-        if l[0] == name and l[2] == mail_addr:
-            print_line ([l[0], l[1]+l[2]])
+    if add_Entry:
+        print ("\n\nnew / modified entry:")
+        for l in lines: #print the updated entry
+            if l[0] == name and l[2] == mail_addr:
+                print_line ([l[0], l[1]+l[2]])
+    else:
+        print ("removed virtual mapping of "+name)
 
         
 def user_confirm_replace(line):
