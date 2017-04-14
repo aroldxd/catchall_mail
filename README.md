@@ -11,3 +11,7 @@ The advantage of this is, that virtual addresses that get leaked to spam distrib
 * first run has to be done with the necessary rights to create directories in /etc
 * make sure *catchall* always will have the necessary rights to access the files in /etc/catchall (e.g. 'chown -R [user] /etc/catchall')
 * you can move the executable ('catchall.py') to /usr/bin/catchall, then you can use the catchall command directly in your shell / crontab / whatever
+
+## TODO
+* add savefile for: main-address, domains
+* improve installation (create and own directories)
