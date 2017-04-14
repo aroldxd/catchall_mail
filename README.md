@@ -1,5 +1,5 @@
 # catchall_mail
-This is a small util to enforce effective spam management for servers running postfix.
+This is a small util to enforce effective spam management for servers running postfix by creating a virtual address for every service and contact.
 
 ## how it works
 Every contact gets an own email-address, consisting of a random prefix + an domainname (that you own and postfix is configured to listen on).
