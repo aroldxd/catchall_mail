@@ -41,14 +41,12 @@ def main () :
 def init () :
     save_dir = os.path.dirname(basedir)
     if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
-        print("created basedir")
-
+        print("base directory missing: "+basedir)
+        exit(1)
     backup = os.path.dirname(backupdir)
     if not os.path.exists(backup):
-        os.makedirs(backup)
-        print("created backupdir")
-
+        print("backup directory missing: "+backupdir)
+        exit(1)
     if os.path.isfile(savefile):
         os.utime(savefile, None)
     else:
