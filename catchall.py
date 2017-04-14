@@ -8,7 +8,7 @@ import time
 from shutil import copyfile
 import configparser
 
-TESTMODE = False #mainly prevents the writing of postfix config
+TESTMODE = True                #mainly prevents the writing of postfix config
 basedir="/etc/catchall/"
 savefile=basedir+"save.csv"
 backupdir=basedir+"backup/"
@@ -22,13 +22,14 @@ def main () :
     
     if len(sys.argv) > 1:
         if sys.argv[1] == "-a":
-            mod_line(sys.argv[2], get_random(), True, get_mail_addr())
+            mod_line(sys.argv[2].lower(), get_random(), True, get_mail_addr())
             generate_postfix_config()
-        elif sys.argv[1] == "-s":
-            lookup(sys.argv[2])
+
+        elif sys.argv[1] == "-l" and len(sys.argv) >= 3:
+            lookup(sys.argv[2].lower())
                 
         elif sys.argv[1] == "-r":
-            mod_line(sys.argv[2], get_random(), False, get_mail_addr())
+            mod_line(sys.argv[2].lower(), get_random(), False, get_mail_addr())
             generate_postfix_config()
 
         elif sys.argv[1] == "-l":
@@ -38,7 +39,7 @@ def main () :
             backup_save()
 
         elif sys.argv[1] == "-v":
-            print ("catchall version 0.1")
+            print ("catchall version 0.11")
     else:
         print_usage()
 
@@ -106,10 +107,12 @@ def mod_line (name, pref, add_Entry, mail_addr) :
     lines = list(r)
     was_in = False
     save_file.close()
+    pref_tmp = 0 #used for output and used to check, if removal was necessary
 
     for line in lines:
         if line[0] == name and line[2] == mail_addr:
             was_in = True
+            pref_tmp = line[1]
     if not was_in:
         lines.append ([name, pref, mail_addr])
             
@@ -137,8 +140,10 @@ def mod_line (name, pref, add_Entry, mail_addr) :
             if l[0] == name and l[2] == mail_addr:
                 print_line ([l[0], l[1]+l[2]])
     else:
-        print ("removed virtual mapping of "+name)
-
+        if not pref_tmp == 0:
+            print ("removed virtual mapping of '"+name+"' with '"+pref_tmp+mail_addr+"'")
+        else:
+            print ("'"+name+"' in combination with '"+mail_addr+"' had no mapping.")
         
 def user_confirm_replace(line):
     response = input("Name already in database: "+line[0]+" - "+line[1]+", replace?\n[yes/NO] ")
@@ -197,12 +202,13 @@ def lookup (name) :
     if len(result) == 0:
         print ("No address for name")
     else:
+        print ("results for '"+name+"':")
         for l in result:
             print_line(l)
 
 def listall () :
     result = []
-    result.append (['Name', 'email Adresse'])
+    result.append (['Name', 'email address'])
     result.append (["-------", "----------------"])
     lines = read_file()
     for l in lines:
@@ -231,21 +237,24 @@ def print_usage ():
     print ("Usage:")
     print ("-a [Name] [mail_addr]: add an entry")
     print ("-r [Name] [mail_addr]: remove an entry")
-    print ("-s [Name] [mail_addr]: (search) lookup the prefix of a given name")
-    print ("-l                   : list all current members of the savefile")
+    print ("-l [Name] [mail_addr]: lookup the available virtual addresses of a given name")
+    print ("-l                   : list all current active virtual addresses")
     print ("-b                   : backup the savefile")
     print ("-v                   : print version")
-    print ("\nmail addr (if config readable and addresses set):")
+    print ("\n if [mail_addr] not given, default is used\n")
+    print ("\nmail_addr (if config readable and addresses set):")
     print (gen_domain_string())
 
 def gen_domain_string():
     result = ""
     i = 0
     for m in domains:
-        result += "\t"+str(i)+"\t"+m
         if i == 0:
-            result += "\t[DEFAULT]"
-        result += "\n"
+            result += "[DEFAULT] "
+        else:
+            result += "          "
+            
+        result += str(i)+" -> "+m+"\n"
         i=i+1
     return result
     
