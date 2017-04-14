@@ -1,0 +1,3 @@
+[main]
+mainaddr = me@example.com
+domains = @domain1.com,@domain2.com,@domain3.com
