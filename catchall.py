@@ -24,14 +24,15 @@ def main():
 
     if len(sys.argv) > 1:
         if sys.argv[1] == "-a":
-            mod_line(sys.argv[2].lower(), get_random(), True, get_mail_addr())
+            
+            mod_line(sys.argv[2].lower(), generate_prefix(), True, get_mail_addr())
             generate_postfix_config()
 
         elif sys.argv[1] == "-l" and len(sys.argv) >= 3:
             lookup(sys.argv[2].lower())
 
         elif sys.argv[1] == "-r":
-            mod_line(sys.argv[2].lower(), get_random(), False, get_mail_addr())
+            mod_line(sys.argv[2].lower(), generate_prefix, False, get_mail_addr())
             generate_postfix_config()
 
         elif sys.argv[1] == "-l":
@@ -194,7 +195,7 @@ def lookup(name):
     lines = read_file()
     search_for = name.split("@")  # if array has 2 parts, then it is a reverse lookup (prefix given)
 
-    if len(search_for) == 1:  # name or prefix given
+    if len(search_for) == 1:  # name given
         result = []
         for l in lines:
             if l[0] == name:
@@ -205,7 +206,7 @@ def lookup(name):
             print("results for '" + name + "':")
             for l in result:
                 print_line(l)
-
+                
     elif len(search_for) == 2:  # email_address given => reverse lookup
         result = ""
         for l in lines:
@@ -217,6 +218,21 @@ def lookup(name):
             print("This address belongs to: " + result)
 
 
+def generate_prefix ():
+    lines = read_file()
+    contained = True
+
+    prefixes = []
+    for l in lines:
+        prefixes.append(l[1])
+
+    test = get_random()  # generate prefixes until an unused prefix is found
+    while test in prefixes:
+        test = get_random()
+
+    return test
+
+            
 def listall():
     result = []
     result.append(['Name', 'email address'])
