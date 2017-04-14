@@ -19,7 +19,7 @@ catchall prints the usage if called without arguments
 | option | explanation |
 |---|---|
 | [main] | begin of config |
-| domains | the mail domains you own and postfix ist configured on, comma seperated without spaces, first is default (e.g. 'domains = @example.com') |
+| domains | the mail domains you own and postfix ist configured on, comma seperated without spaces, first is default (see 'example_config') |
 | mainaddr | the mail address incoming mail is redirected to |
 
 ## files
