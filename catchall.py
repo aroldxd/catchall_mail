@@ -9,7 +9,7 @@ from shutil import copyfile
 import configparser
 
 
-TESTMODE = False  # mainly prevents the writing of postfix config
+TESTMODE = True  # mainly prevents the writing of postfix config
 basedir = "/etc/catchall/"
 savefile = basedir + "save.csv"
 backupdir = basedir + "backup/"
@@ -17,7 +17,8 @@ mapfile = "/etc/postfix/virtual"
 configfile = basedir + "config"
 domains = []
 mainaddress = ""
-
+pre_defs = []  # pre defined prefixes (from config), not saved in 'save.csv'
+pre_defs_avail = False
 
 def main():
     init()
@@ -74,6 +75,7 @@ def init():
 def readconfig():
     global domains
     global mainaddress
+    global pre_defs_avail
     config_p = configparser.ConfigParser()
     config_p.read(configfile)
 
@@ -92,6 +94,15 @@ def readconfig():
     domains_tmp = config_p['main']['domains']
     domains = domains_tmp.split(',')
 
+    pre_def_tmp = config_p['main']['pre_def']
+    if len(pre_def_tmp) > 0:
+        pre_defs_avail = True
+        
+    pre_def = pre_def_tmp.split(',')
+    for p in pre_def:
+        pre_defs.append(p.split(':'))
+        
+    
     mainaddress = config_p['main']['mainaddr']
 
 
@@ -116,12 +127,13 @@ def mod_line(name, pref, add_Entry, mail_addr):
     pref_tmp = 0  # used for output and used to check, if removal was necessary
 
     for line in lines:
+
         if line[0] == name and line[2] == mail_addr:
             was_in = True
             pref_tmp = line[1]
     if not was_in:
         lines.append([name, pref, mail_addr])
-
+        
     # write the updated file
     save_file = open(savefile, 'w')
     w = csv.writer(save_file, delimiter=',', quotechar='|')
@@ -139,7 +151,7 @@ def mod_line(name, pref, add_Entry, mail_addr):
 
     save_file.flush()
     save_file.close()
-
+    
     if add_Entry:  # modified
         print("\n\nnew / modified / untouched entry:")
         for l in lines:  # print the updated entry
@@ -153,7 +165,7 @@ def mod_line(name, pref, add_Entry, mail_addr):
 
 
 def user_confirm_replace(line):
-    response = input("Name already in database: " + line[0] + " - " + line[1] + ", replace?\n[yes/NO] ")
+    response = input("Name already in database: " + line[0] + " - " + line[1] + line[2] + ", replace?\n[yes/NO] ")
     if response == "yes":
         return True
     else:
@@ -169,12 +181,20 @@ def backup_save():
 
 
 def generate_postfix_config():
-    save_file = open(savefile, 'r')
-    save = csv.reader(save_file, delimiter=',', quotechar='|')
+    lines = read_file()
     out = ""
-    for row in save:
+
+    # append the predefinded prefixes (because they are not contained in the savefile)
+    if pre_defs_avail:
+        for p in pre_defs:
+            email = p[1].split('@')
+            pref = p[0]
+            tmp =  [p[0], email[0], "@"+email[1]]
+            lines.append(tmp)
+
+    
+    for row in lines:
         out += row[1] + row[2] + ' ' + mainaddress + "\n"
-    save_file.close()
 
     if not TESTMODE:
         config = open(mapfile, 'w')
@@ -194,6 +214,14 @@ def generate_postfix_config():
 def lookup(name):
     lines = read_file()
     search_for = name.split("@")  # if array has 2 parts, then it is a reverse lookup (prefix given)
+
+    # append the predefinded prefixes (because they are not contained in the savefile)
+    if pre_defs_avail:
+        for p in pre_defs:
+            email = p[1].split('@')
+            pref = p[0]
+            tmp =  [p[0], email[0], "@"+email[1]]
+            lines.append(tmp)
 
     if len(search_for) == 1:  # name given
         result = []
@@ -238,6 +266,16 @@ def listall():
     result.append(['Name', 'email address'])
     result.append(["-------", "----------------"])
     lines = read_file()
+
+    # append the predefinded prefixes (because they are not contained in the savefile)
+    if pre_defs_avail:
+        for p in pre_defs:
+            email = p[1].split('@')
+            pref = p[0]
+            tmp =  [p[0], email[0], "@"+email[1]]
+            lines.append(tmp)
+
+    
     for l in lines:
         result.append([l[0], l[1] + l[2]])
 
