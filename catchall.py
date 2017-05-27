@@ -43,7 +43,7 @@ def main():
             backup_save()
 
         elif sys.argv[1] == "-v":
-            print("catchall version 0.12")
+            print("catchall version 0.13")
     else:
         print_usage()
 
