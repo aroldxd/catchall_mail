@@ -9,7 +9,7 @@ from shutil import copyfile
 import configparser
 
 
-TESTMODE = True  # mainly prevents the writing of postfix config
+TESTMODE = False  # mainly prevents the writing of postfix config
 basedir = "/etc/catchall/"
 savefile = basedir + "save.csv"
 backupdir = basedir + "backup/"
