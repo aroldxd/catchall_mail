@@ -102,7 +102,6 @@ def readconfig():
     for p in pre_def:
         pre_defs.append(p.split(':'))
         
-    
     mainaddress = config_p['main']['mainaddr']
 
 
@@ -187,10 +186,11 @@ def generate_postfix_config():
     # append the predefinded prefixes (because they are not contained in the savefile)
     if pre_defs_avail:
         for p in pre_defs:
-            email = p[1].split('@')
-            pref = p[0]
-            tmp =  [p[0], email[0], "@"+email[1]]
-            lines.append(tmp)
+            # email = p[1].split('@')
+            # pref = p[0]
+            # tmp =  [p[0], email[0], "@"+email[1]]
+            # tmp =  [p[0], p[1]]
+            out += p[1] + ' ' + mainaddress + "\n"
 
     
     for row in lines:
@@ -218,10 +218,13 @@ def lookup(name):
     # append the predefinded prefixes (because they are not contained in the savefile)
     if pre_defs_avail:
         for p in pre_defs:
-            email = p[1].split('@')
-            pref = p[0]
-            tmp =  [p[0], email[0], "@"+email[1]]
+            # email = p[1].split('@')
+            # pref = p[0]
+            # tmp =  [p[0], email[0], "@"+email[1]]
+            # lines.append(p[0] + p[1])
+            tmp =  [p[0], p[1]]
             lines.append(tmp)
+
 
     if len(search_for) == 1:  # name given
         result = []
@@ -270,11 +273,13 @@ def listall():
     # append the predefinded prefixes (because they are not contained in the savefile)
     if pre_defs_avail:
         for p in pre_defs:
-            email = p[1].split('@')
-            pref = p[0]
-            tmp =  [p[0], email[0], "@"+email[1]]
-            lines.append(tmp)
-
+            # email = p[1].split('@')
+            # pref = p[0]
+            # tmp =  [p[0], email[0], "@"+email[1]]
+            # lines.append(p[0] + p[1])
+            tmp =  [p[0], p[1]]
+            result.append(tmp)
+            
     
     for l in lines:
         result.append([l[0], l[1] + l[2]])
