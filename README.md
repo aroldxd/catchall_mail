@@ -3,8 +3,8 @@ This is a small util to enforce effective spam management for servers running po
 **This project is work in progress, pre alpha and [insert usual warnings]**
 
 ## how it works
-Every contact gets an own email-address, consisting of a random prefix + an domainname (that you own and postfix is configured to listen on).
-Emails that are send to those generated "virtual"-addresses are forwarded to your main email address.
+Every contact gets an own email-address, consisting of a random prefix + a domainname (that you own and postfix is configured to listen on).
+Emails that are sent to those generated "virtual"-addresses are forwarded to your main email address.
 The advantage of this is, that virtual addresses that get leaked to spam distributors can be easily renewed, the spam will not reach you anymore. Further, you can see **who** has leaked your address (and then take measures as renewing your password at that service).
 
 ## installation
@@ -28,7 +28,7 @@ catchall prints the usage if called without arguments
 |------------------|---------------------|
 | [basedir] | base directory, contains all files (defaults to /etc/catchall) |
 | save.csv | contains virtual mailaddress to name relation |
-| config | config file (take a look at 'default_config') |
+| config | config file (take a look at 'example_config') |
 | [basedir]/backup/ | contains backups of the savefile |
 | /etc/postfix/virtual | file that tells postfix where to route virtual mail addresses |
 

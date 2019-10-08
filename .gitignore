@@ -1,0 +1,8 @@
+#Flake 8 config file
+.flake8
+
+# mypy
+.mypy_cache
+
+#local config
+config
