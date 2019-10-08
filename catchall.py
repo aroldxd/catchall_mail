@@ -20,12 +20,13 @@ mainaddress = ""
 pre_defs = []  # pre defined prefixes (from config), not saved in 'save.csv'
 pre_defs_avail = False
 
+
 def main():
     init()
 
     if len(sys.argv) > 1:
         if sys.argv[1] == "-a":
-            
+
             mod_line(sys.argv[2].lower(), generate_prefix(), True, get_mail_addr())
             generate_postfix_config()
 
@@ -79,7 +80,7 @@ def readconfig():
     config_p = configparser.ConfigParser()
     config_p.read(configfile)
 
-    if (not 'main' in config_p):
+    if ('main' not in config_p):
         print("config file missing / damages (make sure it begins with '[main]'!")
         exit(1)
 
@@ -97,11 +98,11 @@ def readconfig():
     pre_def_tmp = config_p['main']['pre_def']
     if len(pre_def_tmp) > 0:
         pre_defs_avail = True
-        
+
     pre_def = pre_def_tmp.split(',')
     for p in pre_def:
         pre_defs.append(p.split(':'))
-        
+
     mainaddress = config_p['main']['mainaddr']
 
 
@@ -132,7 +133,7 @@ def mod_line(name, pref, add_Entry, mail_addr):
             pref_tmp = line[1]
     if not was_in:
         lines.append([name, pref, mail_addr])
-        
+
     # write the updated file
     save_file = open(savefile, 'w')
     w = csv.writer(save_file, delimiter=',', quotechar='|')
@@ -150,7 +151,7 @@ def mod_line(name, pref, add_Entry, mail_addr):
 
     save_file.flush()
     save_file.close()
-    
+
     if add_Entry:  # modified
         print("\n\nnew / modified / untouched entry:")
         for l in lines:  # print the updated entry
@@ -192,7 +193,6 @@ def generate_postfix_config():
             # tmp =  [p[0], p[1]]
             out += p[1] + ' ' + mainaddress + "\n"
 
-    
     for row in lines:
         out += row[1] + row[2] + ' ' + mainaddress + "\n"
 
@@ -202,10 +202,10 @@ def generate_postfix_config():
         config.close()
 
         print("Mapping postfix file")
-        output = subprocess.check_output(["postmap", mapfile]);
+        output = subprocess.check_output(["postmap", mapfile])
         print(output)
         print("reloading postfix server")
-        output = subprocess.check_output(["/etc/init.d/postfix", "reload"]);
+        output = subprocess.check_output(["/etc/init.d/postfix", "reload"])
     else:
         print("--TESTMODE--")
         print(out)
@@ -222,9 +222,8 @@ def lookup(name):
             # pref = p[0]
             # tmp =  [p[0], email[0], "@"+email[1]]
             # lines.append(p[0] + p[1])
-            tmp =  [p[0], p[1]]
+            tmp = [p[0], p[1]]
             lines.append(tmp)
-
 
     if len(search_for) == 1:  # name given
         result = []
@@ -237,7 +236,7 @@ def lookup(name):
             print("results for '" + name + "':")
             for l in result:
                 print_line(l)
-                
+
     elif len(search_for) == 2:  # email_address given => reverse lookup
         result = ""
         for l in lines:
@@ -249,9 +248,8 @@ def lookup(name):
             print("This address belongs to: " + result)
 
 
-def generate_prefix ():
+def generate_prefix():
     lines = read_file()
-    contained = True
 
     prefixes = []
     for l in lines:
@@ -263,7 +261,7 @@ def generate_prefix ():
 
     return test
 
-            
+
 def listall():
     result = []
     result.append(['Name', 'email address'])
@@ -277,10 +275,9 @@ def listall():
             # pref = p[0]
             # tmp =  [p[0], email[0], "@"+email[1]]
             # lines.append(p[0] + p[1])
-            tmp =  [p[0], p[1]]
+            tmp = [p[0], p[1]]
             result.append(tmp)
-            
-    
+
     for l in lines:
         result.append([l[0], l[1] + l[2]])
 
