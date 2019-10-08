@@ -304,16 +304,19 @@ def read_file():
 
 
 def print_usage():
-    print("Usage:")
-    print("-a [Name] [mail_addr]: add an entry")
-    print("-r [Name] [mail_addr]: remove an entry")
-    print("-l [Name]            : lookup the available virtual addresses of a given name")
-    print("-l [virtual address] : reverse lookup the owner of this virtual address")
-    print("-l                   : list all current active virtual addresses")
-    print("-b                   : backup the savefile")
-    print("-v                   : print version")
-    print("\n if [mail_addr] not given, default is used\n")
-    print("\nmail_addr (if config readable and addresses set):")
+    print("""Usage:
+             -a [Name] [mail_addr]: add an entry
+             -r [Name] [mail_addr]: remove an entry
+             -l [Name]            : lookup the available virtual addresses of a given name
+             -l [virtual address] : reverse lookup the owner of this virtual address
+             -l                   : list all current active virtual addresses
+             -b                   : backup the savefile
+             -v                   : print version
+
+                if [mail_addr] not given, default is used
+
+             mail_addr (if config readable and addresses set):""")
+
     print(gen_domain_string())
 
 
